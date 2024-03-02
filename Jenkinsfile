@@ -5,7 +5,7 @@ pipeline {
         maven 'maven'
     }
     environment {
-        registry = "mnr143/rk"
+        registry = "mnr143/rk1"
         registryCredential = 'docker'
     }
     stages {
