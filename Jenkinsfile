@@ -40,15 +40,16 @@ pipeline {
                 }
             }
         }
-         stage('Push Docker') {
+        
+        stage('Push Docker') {
             steps {
                 echo 'Push Docker'
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                        dockerImage.push("${env.BUILD_NUMBER}") 
-                        dockerImage.push('latest')
-                    }
+                    def dockerImage = docker.image(registry + ":$BUILD_NUMBER")
+                    dockerImage.push()
+                    dockerImage.push('latest')
                 }
             }
+        }
     }
 }
