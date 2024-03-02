@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         SCANNER_HOME = tool 'SonarQube-Scanner'
-        APP_NAME = "register-app-pipeline"
+        APP_NAME = "register-app-pipeline1"
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
         DOCKER_PASS = 'docker'
