@@ -5,13 +5,8 @@ pipeline {
         maven 'maven'
     }
     environment {
-	    SCANNER_HOME = tool 'SonarQube-Scanner'
-	    APP_NAME = "register-app-pipeline"
-            RELEASE = "1.0.0"
-            DOCKER_USER = "mnr143"
-            DOCKER_PASS = 'Mnr143@2023'
-            IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+	    registry = "mnr143/myapp"
+            registryCredential = 'docker'
     }
     stages{
         stage("Cleanup Workspace"){
@@ -38,20 +33,11 @@ pipeline {
                  sh "mvn test"
            }
        }
-        stage("Build & Push Docker Image") {
-            steps {
-                script {
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image = docker.build "${IMAGE_NAME}"
-                    }
-
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
-                    }
-                }
-            }
-
-       }   
-   }
+        stage('Building image') {
+	    steps{
+		script {
+		docker.build registry + ":$BUILD_NUMBER"
+		  }
+		}
+    }
 }
