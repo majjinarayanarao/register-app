@@ -5,8 +5,14 @@ pipeline {
         maven 'maven'
     }
     environment {
-        registry = "mnr143/rk1"
-        registryCredential = 'docker'
+        SCANNER_HOME = tool 'SonarQube-Scanner'
+        APP_NAME = "register-app-pipeline"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "mnr143"
+        DOCKER_PASS = 'docker'
+        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
     }
     stages {
         stage("Cleanup Workspace") {
@@ -33,21 +39,31 @@ pipeline {
             }
         }
 
-        stage('Building image') {
+        stage("Build & Push Docker Image") {
             steps {
                 script {
-                    docker.build(registry + ":$BUILD_NUMBER")
+                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_USER, DOCKER_PASS) {
+                        def docker_image = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
                 }
             }
         }
-        
-        stage('Push Docker') {
+
+        stage("Trivy Scan") {
             steps {
-                echo 'Push Docker'
                 script {
-                    def dockerImage = docker.image(registry + ":$BUILD_NUMBER")
-                    dockerImage.push()
-                    dockerImage.push('latest')
+                    sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${IMAGE_NAME}:${IMAGE_TAG} --no-progress --scanners vuln --exit-code 0 --severity HIGH,CRITICAL --format table'
+                }
+            }
+        }
+
+        stage('Cleanup Artifacts') {
+            steps {
+                script {
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker rmi ${IMAGE_NAME}:latest"
                 }
             }
         }
