@@ -47,6 +47,8 @@ pipeline {
           steps {
             withSonarQubeEnv('SonarQube-installations') {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mnr143 \
+                   -Dsonar.host.url=http://52.66.111.240:9000 \
+                   -Dsonar.login=63209d914e4bd28b96fca3e932fcb81f95406718"
                    -Dsonar.projectVersion=1.0 \
                    -Dsonar.sources=src/ \
                    -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
