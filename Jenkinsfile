@@ -45,7 +45,7 @@ pipeline {
           }
 
           steps {
-            withSonarQubeEnv('sonar-pro') {
+            withSonarQubeEnv('SonarQube-installations') {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=mnr143 \
                    -Dsonar.projectVersion=1.0 \
                    -Dsonar.sources=src/ \
