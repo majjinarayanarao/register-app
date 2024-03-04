@@ -38,20 +38,39 @@ pipeline {
                  sh "mvn test"
            }
        }
-        stage("Build & Push Docker Image") {
-            steps {
-                script {
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image = docker.build "${IMAGE_NAME}"
-                    }
+       stage("Build & Push Docker Image") {
+    steps {
+        script {
+            // Login to JFrog Artifactory
+            def server = Artifactory.server 'Artifactory_Server_Name'
+            server.credentialsId = 'Artifactory_Credentials_Id'
 
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
-                    }
-                }
+            // Build Docker image
+            def dockerImage = docker.build "${IMAGE_NAME}"
+
+            // Tag the image
+            docker.image("${IMAGE_NAME}").tag("${IMAGE_TAG}")
+
+            // Push the image to JFrog Artifactory
+            docker.withRegistry("https://your-artifactory-url.com", "Artifactory_Credentials_Id") {
+                dockerImage.push("${IMAGE_TAG}")
+                dockerImage.push('latest')
             }
-       } 
+        }
+    }
+}
+Artifactory_Server_Name: Name of the JFrog Artifactory server configured in Jenkins.
+Artifactory_Credentials_Id: ID of the credentials configured in Jenkins to authenticate with JFrog Artifactory.
+https://your-artifactory-url.com: URL of your JFrog Artifactory instance.
+IMAGE_NAME: Name of your Docker image.
+IMAGE_TAG: Tag of your Docker image.
+This modified stage will build your Docker image, tag it appropriately, and then push it to your specified JFrog Artifactory repository. Make sure you have the necessary permissions and configurations set up in your JFrog Artifactory instance for Docker image management.
+
+
+
+
+
+
 	stage("Trivy Scan") {
            steps {
                script {
