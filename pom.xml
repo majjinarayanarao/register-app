@@ -171,6 +171,11 @@
 
   <dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.2</version>
+        </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -223,5 +228,17 @@
   <prerequisites>
     <maven>3.0.3</maven>
   </prerequisites>
+<profiles>
+    <profile>
+        <id>sonar</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+            <!-- Optional URL to server. Default value is http://localhost:9000 -->
+            <sonar.host.url>http://13.201.115.26:9000/</sonar.host.url>
+        </properties>
+    </profile>
+</profiles>
 
 </project>
