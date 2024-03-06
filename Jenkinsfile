@@ -6,9 +6,9 @@ pipeline {
     }
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
-        ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
+        ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/maa'
         APP_NAME = 'my-image'
-        DOCKER_USER = 'mana'
+        DOCKER_USER = 'maa'
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
     }
     stages {
