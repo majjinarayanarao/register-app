@@ -29,7 +29,7 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'awscred', variable: 'jenkins')]) {
+                    withCredentials([string(credentialsId: 'aws', variable: 'mav')]) {
                         docker.withRegistry("${ECR_REGISTRY}", 'ecr') {
                             docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}").push()
                         }
