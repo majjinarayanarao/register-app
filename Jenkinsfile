@@ -4,38 +4,24 @@ pipeline {
         jdk 'jdk17'
         maven 'maven'
     }
-    
     environment {
-        // Define your environment variables here
-        DOCKER_REGISTRY_CREDENTIALS = 'docker'
-        DOCKER_IMAGE = 'iov'
-        DOCKER_USER = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
-
+    
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'ec', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
-            }
-        }
-
         stage('Build') {
             steps {
-                script {
-                    // Build Maven project
-                    sh 'mvn clean package'
-                }
+                sh 'docker build -t my-image .'
             }
         }
-
-        stage("Build & Push Docker Image") {
+        
+        stage('Push to ECR') {
             steps {
-                script {
-                    docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
-                        def dockerImage = docker.build("${DOCKER_IMAGE}")
-                        dockerImage.push("${DOCKER_USER}:${IMAGE_TAG}")
-                        dockerImage.push("${DOCKER_USER}:latest")
-                    }
+                withAWS(region: AWS_DEFAULT_REGION, credentials: 'aws') {
+                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}"
+                    sh "docker tag my-image ${ECR_REPOSITORY}:latest"
+                    sh "docker push ${ECR_REPOSITORY}:latest"
                 }
             }
         }
