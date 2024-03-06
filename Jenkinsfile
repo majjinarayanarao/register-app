@@ -8,19 +8,17 @@ pipeline {
         AWS_DEFAULT_REGION = 'ap-south-1'
         ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
-     stages {
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'new', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
             }
         }
-    stages {
         stage('Build') {
             steps {
                 sh 'docker build -t my-image .'
             }
         }
-        
         stage('Push to ECR') {
             steps {
                 withAWS(region: AWS_DEFAULT_REGION, credentials: 'aws') {
