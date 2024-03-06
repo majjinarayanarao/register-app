@@ -7,7 +7,7 @@ pipeline {
     
     environment {
         // Define your environment variables here
-        DOCKER_REGISTRY_CREDENTIALS = 'aws'
+        DOCKER_REGISTRY_CREDENTIALS = 'docker'
         DOCKER_IMAGE = 'iov'
         DOCKER_USER = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
