@@ -1,71 +1,42 @@
 pipeline {
     agent any
-    tools {
-        jdk 'jdk17'
-        maven 'maven'
-    }
+
     environment {
-	    SCANNER_HOME = tool 'SonarQube-Scanner'
-	    APP_NAME = "register-app-pipeline"
-            RELEASE = "1.0.0"
-            DOCKER_USER = "mnr143"
-            DOCKER_PASS = 'docker'
-            IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        DOCKER_IMAGE_NAME = 'my-docker-image'
+        ECR_REGISTRY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
-    stages{
-        stage("Cleanup Workspace"){
-                steps {
-                cleanWs()
-                }
-        }
 
-        stage("Checkout from SCM"){
-                steps {
-                    git branch: 'new', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
-                }
-        }
-
-        stage("Build Application"){
+    stages {
+        stage('Checkout') {
             steps {
-                sh "mvn clean package"
+                git branch: 'main', url: 'https://github.com/your/repository.git'
             }
+        }
 
-       }
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
 
-       stage("Test Application"){
-           steps {
-                 sh "mvn test"
-           }
-       }
-        stage("Build & Push Docker Image") {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image = docker.build "${IMAGE_NAME}"
-                    }
+                    docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}")
+                }
+            }
+        }
 
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
+        stage('Push to ECR') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'awscred', variable: 'jenkins')]) {
+                        docker.withRegistry("${ECR_REGISTRY}", 'ecr') {
+                            docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}").push()
+                        }
                     }
                 }
             }
-       } 
-	stage("Trivy Scan") {
-           steps {
-               script {
-	            sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image mnr143/register-app-pipeline:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table')
-               }
-           }
-       }
-	 stage ('Cleanup Artifacts') {
-           steps {
-               script {
-                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker rmi ${IMAGE_NAME}:latest"
-               }
-          }
-       }
-   }
+        }
+    }
 }
