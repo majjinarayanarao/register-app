@@ -7,6 +7,9 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
         ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
+        APP_NAME = 'my-image'
+        DOCKER_USER = 'aws'
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
     }
     stages {
         stage('Checkout') {
@@ -16,21 +19,29 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'docker build -t my-image .'
+                script {
+                    sh 'docker build -t ${APP_NAME} .'
+                }
             }
         }
         stage('Push to ECR') {
             steps {
-                withAWS(region: AWS_DEFAULT_REGION, credentials: 'aws') {
-                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}"
-                    sh "docker tag my-image ${ECR_REPOSITORY}:latest"
-                    sh "docker push ${ECR_REPOSITORY}:latest"
+                script {
+                    withAWS(region: AWS_DEFAULT_REGION, credentials: 'aws') {
+                        sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}"
+                        sh "docker tag ${APP_NAME} ${ECR_REPOSITORY}:latest"
+                        sh "docker push ${ECR_REPOSITORY}:latest"
+                    }
+                }
+            }
+        }
+        stage('Cleanup Artifacts') {
+            steps {
+                script {
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker rmi ${APP_NAME}:latest"
                 }
             }
         }
     }
 }
-aws cil must be install in jenkins
-jenkins cred lo aws add cheyali
-aws piplines setp aws plugin
-docker plugin inttsllation mustbe done .
