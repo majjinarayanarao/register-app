@@ -35,13 +35,5 @@ pipeline {
                 }
             }
         }
-        stage('Cleanup Artifacts') {
-            steps {
-                script {
-                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker rmi ${APP_NAME}:latest"
-                }
-            }
-        }
     }
 }
