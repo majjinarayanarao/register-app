@@ -4,35 +4,37 @@ pipeline {
         jdk 'jdk17'
         maven 'maven'
     }
+    
     environment {
-        DOCKER_IMAGE_NAME = 'my-docker-image'
-        ECR_REGISTRY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
+        // Define your environment variables here
+        DOCKER_REGISTRY_CREDENTIALS = 'aws'
+        DOCKER_IMAGE = 'iov'
+        DOCKER_USER = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'ec', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
+                git branch: 'new', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
             }
         }
+
         stage('Build') {
             steps {
-                sh 'mvn clean install'
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}")
+                    // Build Maven project
+                    sh 'mvn clean package'
                 }
             }
         }
-        stage('Push to ECR') {
+
+        stage("Build & Push Docker Image") {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'aws', variable: 'mav')]) {
-                        docker.withRegistry("${ECR_REGISTRY}", 'ecr') {
-                            docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}").push()
-                        }
+                    docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
+                        def dockerImage = docker.build("${DOCKER_IMAGE}")
+                        dockerImage.push("${DOCKER_USER}:${IMAGE_TAG}")
+                        dockerImage.push("${DOCKER_USER}:latest")
                     }
                 }
             }
