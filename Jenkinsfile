@@ -8,7 +8,12 @@ pipeline {
         AWS_DEFAULT_REGION = 'ap-south-1'
         ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/mana'
     }
-    
+     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'new', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
+            }
+        }
     stages {
         stage('Build') {
             steps {
