@@ -1,7 +1,7 @@
 pipeline {
     agent any
      tools {
-        jdk 'jdk17'
+        jdk 'jdk11'
         maven 'maven'
 
     environment {
@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your/repository.git'
+                 git branch: 'ec', credentialsId: 'github', url: 'https://github.com/majjinarayanarao/register-app.git'
             }
         }
 
