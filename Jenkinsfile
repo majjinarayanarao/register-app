@@ -1,5 +1,8 @@
 pipeline {
     agent any
+     tools {
+        jdk 'jdk17'
+        maven 'maven'
 
     environment {
         DOCKER_IMAGE_NAME = 'my-docker-image'
