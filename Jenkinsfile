@@ -37,3 +37,10 @@ pipeline {
         }
     }
 }
+
+AKIAYTLSJUZ2BJCT5CP4
+PndeiVK9AtmXA7YcxwCT4Qsopq/s30ro619UEQCQ
+aws cil must be install in jenkins
+jenkins cred lo aws add cheyali
+aws piplines setp aws plugin
+docker plugin inttsllation mustbe done .
