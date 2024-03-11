@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
-        ECR_REPOSITORY = '591334581876.dkr.ecr.ap-south-1.amazonaws.com/maa'
+        ECR_REPOSITORY = '59.dkr.ecr.ap-south-1.amazonaws.com/maa'
         APP_NAME = 'my-image'
         DOCKER_USER = 'maa'
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
@@ -38,8 +38,6 @@ pipeline {
     }
 }
 
-AKIAYTLSJUZ2BJCT5CP4
-PndeiVK9AtmXA7YcxwCT4Qsopq/s30ro619UEQCQ
 aws cil must be install in jenkins
 jenkins cred lo aws add cheyali
 aws piplines setp aws plugin
