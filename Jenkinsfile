@@ -56,5 +56,12 @@ pipeline {
                 }
             }
         }
+        stage('image scan') {
+            steps {
+                script {
+                    sh 'trivy image mnr143/maaa:latest > trivyimage.txt'
+                }
+            }
+        }
     }
 }
