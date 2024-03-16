@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Perform SonarQube analysis
-                    withSonarQubeEnv('SonarQube') {
+                    withSonarQubeEnv('SonarQube-installations') {
                         sh '''
                             mvn clean verify sonar:sonar \
                               -Dsonar.projectKey=youtube \
