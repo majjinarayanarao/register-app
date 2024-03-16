@@ -49,13 +49,20 @@ pipeline {
                 }
             }
         }
-         stage('Build') {
+         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    sh 'docker build -t ${APP_NAME} .'
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image = docker.build "${IMAGE_NAME}"
+                    }
+
+                    docker.withRegistry('',DOCKER_PASS) {
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
                 }
             }
-        }
+       } 
         stage('image scan') {
             steps {
                 script {
