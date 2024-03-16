@@ -19,7 +19,7 @@ pipeline {
                 git branch: 'real', url: 'https://github.com/majjinarayanarao/register-app.git'
             }
         }
-         stage("Build Application") {
+        stage("Build Application") {
             steps {
                 sh "mvn clean package"
             }
@@ -42,6 +42,6 @@ pipeline {
                     sh 'trivy fs > trivyfs.txt'
                 }
             }
-        }
+        }
     }
 }
