@@ -38,6 +38,33 @@ pipeline {
     }
 }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Perform SonarQube analysis
+                    withSonarQubeEnv('SonarQube-installations') {
+                        sh '''
+                            mvn clean verify sonar:sonar \
+                              -Dsonar.projectKey=youtube \
+                              -Dsonar.host.url=http://3.110.178.54:9000 \
+                              -Dsonar.login=squ_eddd02a7725bb811c9ca39fac4d86e9c9d25b5d7
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                script {
+                    // Wait for quality gate
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar'
+                }
+            }
+        }
+    }
+}
+
 aws cil must be install in jenkins
 jenkins cred lo aws add cheyali
 aws piplines setp aws plugin
