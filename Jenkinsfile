@@ -5,7 +5,7 @@ pipeline {
         maven 'maven'
     }
     environment {
-        APP_NAME = "register-app-pipeline"
+        APP_NAME = "maaa"
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
         DOCKER_PASS = 'dockerhub'
@@ -49,6 +49,12 @@ pipeline {
                 }
             }
         }
-
+         stage('Build') {
+            steps {
+                script {
+                    sh 'docker build -t ${APP_NAME} .'
+                }
+            }
+        }
     }
 }
