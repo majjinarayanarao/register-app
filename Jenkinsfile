@@ -5,7 +5,7 @@ pipeline {
         maven 'maven'
     }
     environment {
-        SCANNER_HOME = tool 'SonarQube_Scanner'
+        SCANNER_HOME = tool 'SonarQube-Scanner'
     }
     stages {
         stage("Cleanup Workspace") {
