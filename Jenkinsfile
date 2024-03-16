@@ -3,6 +3,7 @@ pipeline {
     tools {
         jdk 'jdk17'
         maven 'maven'
+        Dependency-Check = 'dk'
     }
     environment {
         SCANNER_HOME = tool 'SonarQube-Scanner'
