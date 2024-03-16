@@ -25,7 +25,7 @@ pipeline {
                     sh '''
                         mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=youtube \
-                          -Dsonar.host.url=http://35.154.240.187:9000 \
+                          -Dsonar.host.url=http://3.110.178.54:9000 \
                           -Dsonar.login=squ_eddd02a7725bb811c9ca39fac4d86e9c9d25b5d7
                     '''
                 }
