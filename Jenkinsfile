@@ -59,7 +59,7 @@ pipeline {
         stage('image scan') {
             steps {
                 script {
-                    sh 'trivy image mnr143/maaa:latest > trivyimage.txt'
+                     sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock trivy image mnr143/maaa:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table >  trivyimage.txt')
                 }
             }
         }
