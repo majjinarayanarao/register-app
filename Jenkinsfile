@@ -54,7 +54,7 @@ pipeline {
                 script {
                     // Authenticate and push the Docker image
                     docker.withRegistry('https://hub.docker.com', DOCKER_REGISTRY_CREDENTIALS) {
-                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
+                     sh "docker push ${DOCKER_USER}/${DOCKER_IMAGE_NAME}:latest"
                     }
                 }
             }
