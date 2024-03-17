@@ -37,7 +37,8 @@ pipeline {
             steps {
                 sh "mvn test"
             }
-        }stages {
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -55,11 +56,12 @@ pipeline {
                 }
             }
         }
+
         stage('Image Scan') {
             steps {
                 script {
                     // Perform image scan using Trivy
-                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${IMAGE_NAME}:${IMAGE_TAG} > trivyimage.txt"
+                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} > trivyimage.txt"
                 }
             }
         }
