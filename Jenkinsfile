@@ -3,15 +3,18 @@ pipeline {
     tools {
         jdk 'jdk17'
         maven 'maven'
+        // Add SonarQube Scanner tool
+        tool 'SonarQube-Scanner'
+        // Add Docker tool
+        dockerTool 'docker'
     }
     environment {
         APP_NAME = "maaa"
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
-        DOCKER_PASS = 'i'
+        DOCKER_PASS = credentials('docker-hub-password')
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-        SCANNER_HOME = tool 'SonarQube-Scanner'
     }
     stages {
         stage("Cleanup Workspace") {
@@ -40,7 +43,7 @@ pipeline {
 
         stage('OWASP FS SCAN') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'dk'
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'default'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -57,7 +60,7 @@ pipeline {
             steps {
                 script {
                     def dockerImage
-                    docker.withRegistry( DOCKER_PASS , toolName: 'docker') {
+                    docker.withRegistry('https://hub.docker.com/', DOCKER_USER, DOCKER_PASS) {
                         dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
                         dockerImage.push('latest') 
                     }
@@ -68,7 +71,7 @@ pipeline {
         stage('Image Scan') {
             steps {
                 script {
-                     sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock trivy image mnr143/maaa:latest --no-progress --scanners vuln  --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt'
+                    sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${IMAGE_NAME}:${IMAGE_TAG} > trivyimage.txt'
                 }
             }
         }
