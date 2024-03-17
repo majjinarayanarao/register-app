@@ -4,7 +4,7 @@ pipeline {
     environment {
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
-        DOCKER_IMAGE_NAME = 'maaa'
+        DOCKER_IMAGE_NAME = 'l'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_REGISTRY_CREDENTIALS = "manasa"
     }
