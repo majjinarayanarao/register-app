@@ -6,7 +6,7 @@ pipeline {
         DOCKER_USER = "mnr143"
         DOCKER_IMAGE_NAME = 'maaa'
         DOCKER_IMAGE_TAG = 'latest'
-        DOCKER_REGISTRY_CREDENTIALS = 'i'
+        DOCKER_REGISTRY_CREDENTIALS = 'mk'
     }
     
     tools {
