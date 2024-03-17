@@ -7,10 +7,9 @@ pipeline {
         dockerTool 'docker'
     }
     environment {
-        APP_NAME = "maaa"
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
-        DOCKER_IMAGE_NAME = 'maa'
+        DOCKER_IMAGE_NAME = 'maaa'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_REGISTRY_CREDENTIALS = 'i'
     }
