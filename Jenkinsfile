@@ -1,18 +1,21 @@
 pipeline {
     agent any
+    
+    environment {
+        RELEASE = "1.0.0"
+        DOCKER_USER = "mnr143"
+        DOCKER_IMAGE_NAME = 'maaa'
+        DOCKER_IMAGE_TAG = 'latest'
+        DOCKER_REGISTRY_CREDENTIALS = 'i'
+    }
+    
     tools {
         jdk 'jdk17'
         maven 'maven'
         // Add Docker tool
         dockerTool 'docker'
     }
-    environment {
-        RELEASE = "1.0.0"
-        DOCKER_USER = "mnr143"
-        DOCKER_IMAGE_NAME = "m"
-        DOCKER_IMAGE_TAG = "latest"
-        DOCKER_REGISTRY_CREDENTIALS = "i"
-    }
+    
     stages {
         stage("Cleanup Workspace") {
             steps {
@@ -49,6 +52,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    // Authenticate and push the Docker image
                     docker.withRegistry('https://hub.docker.com', DOCKER_REGISTRY_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
                     }
@@ -60,7 +64,8 @@ pipeline {
             steps {
                 script {
                     // Perform image scan using Trivy
-                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} > trivyimage.txt"
+                    def imageNameWithTag = "${DOCKER_USER}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${imageNameWithTag} > trivyimage.txt"
                 }
             }
         }
