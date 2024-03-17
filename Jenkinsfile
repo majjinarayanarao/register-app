@@ -42,10 +42,11 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'i', toolName: 'docker', url: 'https://hub.docker.com') {
-                          docker_image = docker.build "${IMAGE_NAME}"
-                        docker_image.push("${IMAGE_TAG}")
-                        dockerImage.push('latest') 
+                    // Push the Docker image to the registry
+                    docker.withRegistry('https://hub.docker.com', 'i') {
+                        def dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                        dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
@@ -54,7 +55,8 @@ pipeline {
         stage('Image Scan') {
             steps {
                 script {
-                    sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${IMAGE_NAME}:${IMAGE_TAG} > trivyimage.txt'
+                    // Perform image scan using Trivy
+                    sh "docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image -f table --no-progress --severity HIGH,CRITICAL --exit-code 0 ${IMAGE_NAME}:${IMAGE_TAG} > trivyimage.txt"
                 }
             }
         }
