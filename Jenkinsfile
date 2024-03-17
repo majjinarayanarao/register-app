@@ -11,6 +11,7 @@ pipeline {
             DOCKER_PASS = 'manasa'
             IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
             IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+	    SCANNER_HOME = tool 'SonarQube-Scanner'
     }
     stages{
         stage("Cleanup Workspace"){
