@@ -62,6 +62,21 @@ pipeline {
                     }
                 }
             }
-       } 
+       }
+	stage("Trivy Scan") {
+           steps {
+               script {
+	            sh 'trivy image mnr143/regi:latest > trivyimage.txt'
+           }
+       }
+
+       stage ('Cleanup Artifacts') {
+           steps {
+               script {
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker rmi ${IMAGE_NAME}:latest"
+               }
+          }
+       }
    }
 }
