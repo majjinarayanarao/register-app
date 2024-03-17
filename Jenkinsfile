@@ -29,14 +29,26 @@ pipeline {
             steps {
                 sh "mvn clean package"
             }
-
-       }
-
-       stage("Test Application"){
+	}
+        stage("Test Application"){
            steps {
                  sh "mvn test"
            }
        }
+	stage('OWASP FS SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'dk'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+
+        stage('TRIVY FS SCAN') {
+            steps {
+                script {
+                    sh 'trivy fs . > trivyfs.txt'
+                }
+            }
+        }
         stage("Build & Push Docker Image") {
             steps {
                 script {
