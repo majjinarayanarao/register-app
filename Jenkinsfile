@@ -43,7 +43,8 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'i', toolName: 'docker', url: 'https://hub.docker.com') {
-                        dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                          docker_image = docker.build "${IMAGE_NAME}"
+                        docker_image.push("${IMAGE_TAG}")
                         dockerImage.push('latest') 
                     }
                 }
