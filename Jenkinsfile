@@ -4,7 +4,7 @@ pipeline {
         jdk 'jdk17'
         maven 'maven'
         // Add SonarQube Scanner tool
-        tool 'SonarQube-Scanner'
+        sonarqubeScanner 'SonarQube-Scanner'
         // Add Docker tool
         dockerTool 'docker'
     }
