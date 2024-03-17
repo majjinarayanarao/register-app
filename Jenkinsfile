@@ -10,9 +10,9 @@ pipeline {
         APP_NAME = "maaa"
         RELEASE = "1.0.0"
         DOCKER_USER = "mnr143"
-        DOCKER_PASS = 'i'
-        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
-        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        DOCKER_IMAGE_NAME = 'maa'
+        DOCKER_IMAGE_TAG = 'latest'
+        DOCKER_REGISTRY_CREDENTIALS = 'i'
     }
     stages {
         stage("Cleanup Workspace") {
@@ -37,21 +37,24 @@ pipeline {
             steps {
                 sh "mvn test"
             }
-        }
-
-        stage("Build & Push Docker Image") {
+        }stages {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Push the Docker image to the registry
-                    docker.withRegistry('https://hub.docker.com', 'i') {
-                        def dockerImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                    }
+                    docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}")
                 }
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_REGISTRY_CREDENTIALS) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
         stage('Image Scan') {
             steps {
                 script {
