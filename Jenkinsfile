@@ -75,3 +75,38 @@ pipeline {
         }
     }
 }
+final ending :
+pipeline {
+    agent any
+    
+    environment {
+        GIT_REPO_NAME = "git1"
+        GIT_USER_NAME = "majjinarayanarao"
+        GITHUB_TOKEN = ""
+    } 
+    stages {
+        stage('Update Deployment File') {
+             steps {
+                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                 sh """
+                        git init
+                        git checkout  main
+                        git branch
+                        echo 'Some content' >> naru
+                        git config user.email 'abhishek.xyz@gmail.com'
+                        git config user.name 'Abhishek Veeramalla'
+                        git branch
+                        git add naru
+                        git commit -m 'Update deployment file'
+                        git config pull.rebase false
+                        git config pull.rebase true
+                        git config pull.ff only
+                        git fetch origin main:tmp
+                        git rebase tmp
+                        git push --set-upstream origin main
+                    """
+                }
+            }
+        }
+    }
+}
